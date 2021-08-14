@@ -1,0 +1,24 @@
+﻿  shoe_flix.c
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(231): warning C4005: '_CRT_SECURE_NO_WARNINGS': 매크로 재정의
+  c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c: note: '_CRT_SECURE_NO_WARNINGS'의 이전 정의를 참조하십시오.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(367): warning C4098: 'Menu': 'void' 함수에서 값을 반환하고 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(673): warning C4098: 'Customer_view': 'void' 함수에서 값을 반환하고 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(738): warning C4098: 'Employee_view': 'void' 함수에서 값을 반환하고 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(766): warning C4047: '=': 'char'의 간접 참조 수준이 'char *'과(와) 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(881): warning C4047: '=': 'char'의 간접 참조 수준이 'char *'과(와) 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(1042): warning C4047: '함수': 'char'의 간접 참조 수준이 'char [5]'과(와) 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(1042): warning C4024: 'Count_sult': 형식 및 실제 매개 변수 2의 형식이 서로 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(1114): warning C4101: 'sal' :참조되지 않은 지역 변수입니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(1117): warning C4101: 'esult' :참조되지 않은 지역 변수입니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(1111): warning C4101: 'empno' :참조되지 않은 지역 변수입니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(1942): warning C4047: '=': 'char'의 간접 참조 수준이 'char *'과(와) 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(2056): warning C4047: '=': 'char'의 간접 참조 수준이 'char *'과(와) 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(2752): warning C4013: 'gets'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(2753): warning C4267: '=': 'size_t'에서 'unsigned short'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(2758): warning C4267: '=': 'size_t'에서 'unsigned short'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(2763): warning C4267: '=': 'size_t'에서 'unsigned short'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(2768): warning C4267: '=': 'size_t'에서 'unsigned short'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(3205): warning C4028: 정식 매개 변수 1이(가) 선언과 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(3205): warning C4028: 정식 매개 변수 2이(가) 선언과 다릅니다.
+c:\과제\3학년\2학기\데이터베이스 응용\shoe_flix.c(3217): warning C4477: 'sprintf' : 서식 문자열 '%d'에 'int' 형식의 인수가 필요하지만 variadic 인수 1의 형식이 'int *'입니다.
+  shoe_filx.vcxproj -> C:\Visual Studio 프로젝트\DB_팀 프로젝트_3학년\shoe_filx\Debug\shoe_filx.exe

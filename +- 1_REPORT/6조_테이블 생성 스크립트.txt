@@ -1,0 +1,60 @@
+drop table product;
+drop table employee;
+drop table customer;
+drop table salproduct;
+drop table users;
+
+create table users(
+    usid varchar2(4),                 
+    uspw varchar2(10) not null,  
+    usname varchar2(6) not null,         
+    
+    CONSTRAINT users_pk PRIMARY KEY(usid)
+);
+
+create table customer(
+    csmno varchar2(4),                 --고객번호
+    csmname varchar2(10) not null,   --고객이름
+    birthday varchar2(10) not null,          --고객생일
+    telephone varchar2(20) not null,  --고객전화번호
+    --고객 가입일 (필요할 수도 있음)
+    CONSTRAINT customer_pk PRIMARY KEY(csmno)
+);
+
+select * from customer where to_char(birthday,'mmdd') = TO_CHAR(sysdate, 'mmdd');
+
+create table product(
+    pdtno varchar2(10) not null,       --상품코드
+    pdtbrand varchar2(20) not null,    --브랜드명
+    pdtname varchar2(50)  not null,    --상품명
+    pdtprice varchar2(20) not null,    --상품가격
+    pdtsize varchar2(3)  not null,       --브랜드 사이즈
+    amount NUMBER(3)  not null,         --상품수량
+    CONSTRAINT product_pk PRIMARY KEY(pdtno)
+);
+
+create table employee(
+    empno  varchar2(4) not null,        --직원번호
+    empname varchar2(20) not null,    --직원이름
+    hiredate varchar2(6) not null,           --고용일
+    sal varchar2(7) not null,        --월급
+    esult varchar2(4)  not null,        --판매실적
+    CONSTRAINT employee_pk PRIMARY KEY(empno)
+);
+insert into customer values ('c101','한슬기','970305','01023642712');
+insert into customer values ('c154','윤근철','971011','01032239641');
+insert into customer values ('c205','손건','970530','01016429892');
+insert into customer values ('c306','안승주','201201','01034712285');
+insert into product values ('n212','나이키','피마원','220000','235','6');
+insert into product values ('a813','아디다스','슈퍼스타','119000','255','2');
+insert into product values ('n222','나이키','블레이져','89000','235','20');
+insert into product values ('n422','나이키','에어포스','149000','235','9');
+insert into product values ('n153','나이키','에어맥스','168000','235','2');
+insert into product values ('a505','아디다스','오즈위고','114000','235','9');
+insert into product values ('r724','컨버스','런스타','79000','235','14');
+insert into product values ('b661','뉴발란스','996','130000','235','10');
+insert into product values ('v308','반스','슬립온','68000','235','2');
+insert into product values ('l963','라코스테','카나비','108000','235','8');
+insert into employee values ('e157','이종민','200301','1800000','6');
+insert into employee values ('e878','이중화','190701','1900000','25');
+insert into employee values ('e382','김성우','170101','1600000','21');

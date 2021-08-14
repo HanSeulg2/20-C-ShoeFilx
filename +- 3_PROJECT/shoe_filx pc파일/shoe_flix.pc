@@ -1,0 +1,1507 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <conio.h>
+
+/* for oracle */
+#include <sqlda.h>
+#include <sqlca.h>
+#include <sqlcpr.h>
+
+#define _CRT_SECURE_NO_WARNINGS
+#define getch() _getch()
+#define STD_HANDLE GetStdHandle(STD_OUTPUT_HANDLE)
+
+//#ifdef WIN32
+#include < windows.h >
+/*---------------  화면 커서 위치 제어 ----------------------*/
+void gotoxy(int x, int y) ;
+void getxy(int *x, int *y) ;
+void clrscr(void) ;
+/*-----------------------------------------------------------*/
+void Main_start();         //시작화면
+void DB_connect();         
+void Menu();               //
+void Log_in();             //로그인
+void Sign_up();            //회원가입
+void Customer_view();     //고객화면
+void Employee_view();     //직원화면
+void Get_proinfo_C();     //고객 목록 출력
+void Get_proinfo_P();     //상품 목록 출력 
+void Get_proinfo_E();     //직원 목록 출력
+void Get_proinfo();     //고객 목록 출력
+void Delete_tuple_C();    //고객 삭제
+void Delete_tuple_P();    //상품 삭제
+void Delete_tuple_E();    //직원 삭제
+void Delete_tuple();    //고객 삭제
+void Insert_tuple_C();     //고객 추가
+void Insert_tuple_P();     //상품 추가
+void Insert_tuple_E();     //직원 추가
+void Insert_tuple();     //상품 추가
+void Update_tuple_C();   //고객 정보 수정
+void Update_tuple_P();   //상품 정보 수정
+void Update_tuple_E();   //직원 정보 수정
+void Update_tuple();   //고객 정보 수정
+void Get_tuple_C();     //고객 검색
+void Get_tuple_P();     //상품 검색
+void Get_tuple_E();     //직원 검색
+void Get_tuple();     //상품 검색
+void Get_tuple_NameC();
+void Get_tuple_NameE();
+void Get_tuple_NoP();
+void Sal_bonus();
+
+void Sell_tuple();     //판매(수량감소)
+void Out_Of_Stock();      //부족 재고 출력
+void Show_employee();   //판매실적
+void Count_sult(int sult, char empno);   //수량만큼 판매
+void rtrim();
+void sql_error();
+
+EXEC SQL BEGIN DECLARE SECTION;
+   VARCHAR uid[80];
+   VARCHAR pwd[20];
+EXEC SQL END DECLARE SECTION;
+char pdtno[20], pdtbrand[20], pdtname[20], pdtprice[10], pdtsize[5], amount[5];
+char pdtno[20], pdtbrand[20], pdtname[20], pdtprice[10], pdtsize[5], amount[5];
+char csmno[20], csmname[20], birthday[20], telephone[10];
+char empno[20], empname[20], hiredate[10], sal[5], esult[5];
+
+void main()
+{
+   _putenv("NLS_LANG=American_America.KO16KSC5601");
+   DB_connect();
+   Main_start();
+   //Get_proinfo_C();     //고객 목록 출력
+   //Get_proinfo_P();     //상품 목록 출력 
+   //Get_proinfo_E();     //직원 목록 출력
+   //Delete_tuple_C();    //고객 삭제
+   //Delete_tuple_P();    //상품 삭제
+   //Delete_tuple_E();    //직원 삭제
+   //Insert_tuple_C();     //고객 추가
+   //Insert_tuple_P();     //상품 추가
+   //Insert_tuple_E();     //직원 추가
+   //Update_tuple_C();   //고객 정보 수정
+   //Update_tuple_P();   //상품 정보 수정
+   //Update_tuple_E();   //직원 정보 수정
+   //Get_tuple_C();     //고객 검색
+   //Get_tuple_P();     //상품 검색
+   //Get_tuple_E();     //직원 검색
+   //Sell_tuple();     //판매(수량감소)
+   //Out_Of_Stock();      //부족 재고 출력
+   EXEC SQL COMMIT WORK RELEASE ;
+   getch();
+}
+void Menu() {
+	printf("                                      ◆ 1. 회원가입 ◆\n\n");
+	printf("                                      ◆ 2. 로그인 ◆\n\n\n");
+	printf("                                      \n\n\n");
+	int i;
+	scanf("%d",&i);
+	switch (i) {
+	case 1:
+		printf("                                       회원가입입니다.\n");
+		Sign_up();
+		printf("                                      ◆ 1. 회원가입 ◆\n\n");
+		printf("                                      ◆ 2. 로그인 ◆\n\n\n");
+		scanf("%d", &i);
+		if (i == 2) {
+			Log_in();
+		}
+		break;
+	case 2:
+		printf("                                       로그인 화면입니다.\n");
+		Log_in();
+		break;
+	case 3:
+		printf("고객");
+		break;
+	case 4:
+		printf("직원");
+		break;
+	default:
+		printf("선택하세요");
+		return 0;
+	}
+}
+void Log_in()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar usid[10];
+   varchar uspw[10];
+   varchar usname[10];
+   char userinfo[1000];
+EXEC SQL END DECLARE SECTION;
+
+EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+    
+    char id[10];
+    char pwd[10];
+
+    printf("아이디를 입력해 주세요 : ");
+    scanf("%s",id);
+    printf("\n\n비밀번호를 입력해 주세요 : ");
+    scanf("%s",pwd);
+
+    sprintf(userinfo,"SELECT * from users where usid = '%s'",id);
+
+    EXEC SQL PREPARE S FROM :userinfo ;
+
+    EXEC SQL DECLARE e_cursor CURSOR FOR S ; 
+    EXEC SQL OPEN e_cursor ;
+    
+for(int i=0; i<1; i++){
+   EXEC SQL FETCH e_cursor INTO :usid, :uspw, :usname;
+       usid.arr[usid.len] = '\0';
+   uspw.arr[uspw.len] = '\0';
+   usname.arr[usname.len] = '\0';
+}
+    if(strcmp(id,usid.arr)==0){
+        if(strcmp(pwd,uspw.arr)==0){
+            printf("\n\n환영합니다 %s님",usname.arr);
+			if (strchr(id, 'c')) {
+				Customer_view();
+			}
+			else if (strchr(id,'e')) {
+					Employee_view();
+			}
+        }else{
+            printf("패스워드 오류");
+        }
+    }else{
+       printf("아이디 오류");
+    }
+    EXEC SQL CLOSE e_cursor;
+}
+/*---------------  회 원 가 입  ----------------------*/
+void Sign_up(){
+EXEC SQL BEGIN DECLARE SECTION;
+    char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+   char id[10];
+       char pw[10];
+       char name[10];
+
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n"); 
+
+
+   printf("\n                          [ 추가할 사용자 정보를 입력하세요 ]\n\n\n");
+
+   printf("                       아이디 : ");
+   scanf("%s", id);
+   printf("\n");
+   printf("                       비밀번호 : ");
+   scanf("%s", pw);
+   printf("\n");
+   printf("                       이름 : ");
+   scanf("%s", name);
+   printf("\n");
+   printf("\n");
+
+   sprintf(dynstmt, "insert into users values ( '%s', '%s', '%s')", id, pw, name);
+
+   for (int i = 0; i < 1; i++) {
+      //EXEC SQL WHENEVER NOT FOUND DO break;
+      EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+      printf("Insert Success\n");
+	  printf("                                      ◆ 회원가입이 완료되었습니다. ◆\n\n\n");
+      EXEC SQL COMMIT WORK ;
+   }
+}
+/*---------------  고객 화면   ----------------------*/
+void Customer_view() {
+	printf("\n환영합니다. 고객님 원하시는 일를 선택해주세요\n");
+	printf("1. 모든 상품 조회\t");
+	printf("2. 상품 코드 검색\t");
+	printf("3. 상품 구매\n");
+	int i;
+	scanf("%d", &i);
+	switch (i) {
+	case 1:
+		Get_proinfo_P();
+		break;
+	case 2:
+	    Get_proinfo_P();
+		Get_tuple_NoP();
+		break;
+	case 3:
+		Sell_tuple();
+		break;
+	default:
+		printf("선택하세요");
+		return 0;
+	}
+}
+/*---------------  직원 화면   ----------------------*/
+void Employee_view() {
+	//4. 직원 - 판매, 상품 추가, 재고확인, 이달의 판매
+	printf("고생하십니다. 원하시는 업무를 선택해주세요\n\n");
+	printf("1. 부족재고 확인\n");
+	printf("2. 상품 검색\n");
+	printf("3. 상품 삭제\n");
+	printf("4. 상품 추가\n");
+	printf("5. 상품 수정\n");
+	printf("6. 고객 전체 목록 확인\n");
+	printf("7. 고객 추가\n");
+	printf("8. 고객 이름 검색\n");
+	printf("9. 고객 삭제\n");
+	printf("10. 고객 정보 수정\n");
+	printf("11. 직원 전체 목록 확인\n");
+	printf("12. 직원 추가\n");
+	printf("13. 직원 검색\n");
+	printf("14. 직원 삭제\n");
+	printf("15. 직원 정보 수정\n");
+	printf("16. 보너스!! 이달의 판매왕\n");
+	int i;
+	scanf("%d", &i);
+	switch (i) {
+	case 1:
+		Out_Of_Stock();
+		break;
+	case 2:
+		Get_tuple_NoP();
+		break;
+	case 3:
+		Delete_tuple_P();
+		break;
+	case 4:
+		Insert_tuple_P();
+		break;
+	case 5:
+		Update_tuple_P();
+		break;
+	case 6:
+		Get_proinfo_C();
+		break;
+	case 7:
+		Insert_tuple_C();
+		break;
+	case 8:
+		Get_tuple_NameC();
+		break;
+	case 9:
+		Delete_tuple_C();
+		break;
+	case 10:
+		Update_tuple_C();
+		break;
+	case 11:
+		Get_proinfo_E();
+		break;
+	case 12:
+		Insert_tuple_E();
+		break;
+	case 13:
+		Get_tuple_NameE();
+		break;
+	case 14:
+		 Delete_tuple_E();
+		break;
+	case 15:
+		 Update_tuple_E();
+		break;
+	case 16:
+		Sal_bonus();
+		break;
+	default:
+		printf("선택하세요");
+		return 0;
+	}
+}
+/*---------------  고객 삭제  ----------------------*/
+void Delete_tuple_C()
+{
+   Get_proinfo_C();
+   
+   EXEC SQL BEGIN DECLARE SECTION;
+
+      char deletecus[1000];
+
+   EXEC SQL END DECLARE SECTION;
+   char cno[100];
+   char flag;
+   
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │     삭제를 원하는 고객의 번호를 입력하시오    │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+      printf("                    ");
+scanf("%s",cno);
+   printf("                    Y/N\n");
+      printf("                    ");
+   flag = (char *)getch() ;
+   for(int i=0;i <1;i++){
+   EXEC SQL WHENEVER NOT FOUND DO break;
+   if(flag == 'y' || flag == 'Y'){
+      sprintf(deletecus,"delete from customer where csmno = '%s'",cno);
+      EXEC SQL EXECUTE IMMEDIATE :deletecus ;
+      printf("삭제가 완료되었습니다\n");
+      EXEC SQL COMMIT WORK ; 
+   }
+   else{
+      printf("취소되었습니다..\n");
+      
+   }}
+EXEC SQL COMMIT WORK ; 
+}
+/*---------------  고객 상품 구매  ----------------------*/
+void Sell_tuple()
+{
+
+   Get_proinfo_P();
+   printf("\n\n");
+   
+   EXEC SQL BEGIN DECLARE SECTION;
+      char dynstmt[1000];
+      int sellamount;
+      char judgment[1000];
+   EXEC SQL END DECLARE SECTION;
+
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+   
+   char flag;
+   char empno[5];
+   char buy[10];
+   int count;
+printf("                   ┌───────────────────────────────────────────────────────┐\n");
+printf("                   │           <   제품 정보를 찾으시겠습니까?   >         │\n");
+printf("                   └───────────────────────────────────────────────────────┘\n");
+   printf("Y/N");
+   flag = (char *)getch() ;
+   
+   if(flag=='y'||flag=='Y'){
+      Get_tuple();
+   }
+   printf("\n\n [ 제품 번호를 입력해주세요. ]\n");
+   scanf("%s",buy);
+
+   printf("\n[ 수량을 입력해 주세요. ]\n");
+   scanf("%d",&count);
+   sprintf(dynstmt,"update product set amount = amount -%d where pdtno = '%s'",count,buy);
+   sprintf(judgment,"select amount from product where pdtno = '%s'",buy);
+
+   EXEC SQL PREPARE S FROM :judgment ;
+   EXEC SQL DECLARE d_cursor CURSOR FOR S ; 
+      EXEC SQL OPEN d_cursor ; 
+
+   for(int i = 0; i<1; i++){
+      EXEC SQL FETCH d_cursor INTO :sellamount;
+      if(sellamount>count){
+            printf("\n\n [ 구매가 완료 되었습니다. ]\n\n");
+            EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+         Show_employee();
+         printf("\n [ 상품을 판매한 직원 넘버를 작성해 주세요. ]\n");
+         scanf("%s",&empno);
+         Count_sult(count, empno);
+            EXEC SQL COMMIT WORK ;
+      }
+      else{
+         printf("\n\n [ 수량이 부족합니다. ]");
+         EXEC SQL COMMIT WORK ;}
+   }
+EXEC SQL CLOSE d_cursor;
+}
+/*---------------  직원 보너스  ----------------------*/
+void Sal_bonus()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar empno[10];
+   varchar sal[20];
+   varchar esult[20];
+   char bonus[1000];
+EXEC SQL END DECLARE SECTION;
+
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+   sprintf(bonus, "update employee set sal = sal * 1.2 where esult >= 20");
+
+   for(int i = 0; i<1; i++){
+   EXEC SQL EXECUTE IMMEDIATE :bonus ;
+   EXEC SQL COMMIT WORK ;
+   printf("                   보너스 지급이 완료되었습니다.\n\n");
+   Get_proinfo_E();
+   }
+}
+/*---------------  오라클 DB 연결  ----------------------*/
+void DB_connect()
+{
+    strcpy((char *)uid.arr,"a20163334@//sedb.deu.ac.kr:1521/orcl");
+    uid.len = (short) strlen((char *)uid.arr);
+    strcpy((char *)pwd.arr,"20163334");
+    pwd.len = (short) strlen((char *)pwd.arr);
+    EXEC SQL CONNECT :uid IDENTIFIED BY :pwd;
+
+   // connection이 실패했을경우의 처리부분
+    if (sqlca.sqlcode != 0 && sqlca.sqlcode != -1405){ 
+      printf("\7Cconnect error: %s", sqlca.sqlerrm.sqlerrmc);
+      getch();
+      exit(-1);
+    }
+
+    printf("Oracle Connect SUCCESS by %s\n", uid.arr);
+}
+void Main_start() {
+	printf("                   ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ                  \n");
+	printf("                  ㅣ                                                              ㅣ                  \n");
+	printf("                  ㅣ                                                              ㅣ                  \n");
+	printf("                  ㅣ   mmmmmmmmm     mm                mmmmmmmmm       mmmmmmmmmmmㅣ                  \n");
+	printf("                  ㅣ   mmmmmmmmm     mm               mm       mm      mmmmmmmmmmmㅣ                  \n");
+	printf("                  ㅣ mm              mm              mm         mm     mm         ㅣ                  \n");
+	printf("                  ㅣmm               mm             mm           mm    mm         ㅣ                  \n");
+	printf("                  ㅣmm               mm             mm           mm    mm         ㅣ                  \n");
+	printf("                  ㅣ mm              mm             mm           mm    mm         ㅣ                  \n");
+	printf("                  ㅣ   mmmmmmmmm     mmmmmmmmm      mm           mm    mmmmmmmmmmmㅣ                  \n");
+	printf("                  ㅣ   mmmmmmmmm     mmmmmmmmm      mm           mm    mmmmmmmmmmmㅣ                  \n");
+	printf("                  ㅣ           mm    mm      mm     mm           mm    mm         ㅣ                  \n");
+	printf("                  ㅣ            mm   mm       mm    mm           mm    mm         ㅣ                  \n");
+	printf("                  ㅣ            mm   mm       mm    mm           mm    mm         ㅣ                  \n");
+	printf("                  ㅣ           mm    mm       mm     mm         mm     mm         ㅣ                  \n");
+	printf("                  ㅣ   mmmmmmmmm     mm       mm      mm       mm      mmmmmmmmmmmㅣ                  \n");
+	printf("                  ㅣ   mmmmmmmmm     mm       mm       mmmmmmmmm       mmmmmmmmmmmㅣ                  \n");
+	printf("                  ㅣ                                                              ㅣ                  \n");
+	printf("                  ㅣ                                                              ㅣ                  \n");
+	printf("                   ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ                  \n\n");
+	Menu();
+
+}
+/*---------------  고객 명단 출력  ----------------------*/
+void Get_proinfo_C()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar num[10];
+   varchar name[20];
+   varchar birthday[10];
+   varchar telephone[20];
+   char cusinfo[1000];
+EXEC SQL END DECLARE SECTION;
+
+   /* SQL 에러문 */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+   /* 실행시킬 SQL 문장 */
+   sprintf(cusinfo, "SELECT *  FROM customer");
+
+   EXEC SQL PREPARE S FROM :cusinfo ;
+   EXEC SQL DECLARE c_cursor CURSOR FOR S ; 
+   EXEC SQL OPEN c_cursor ; 
+printf("                   ┌──────────────────────────────────────┐\n");
+   printf("                   │           <   고객명단   >           │\n");
+printf("                   └──────────────────────────────────────┘\n");
+for(;;){
+EXEC SQL WHENEVER NOT FOUND DO break;
+EXEC SQL FETCH c_cursor INTO :num, :name, :birthday, :telephone;
+num.arr[num.len] = '\0';
+name.arr[name.len] = '\0';
+birthday.arr[birthday.len] = '\0';
+telephone.arr[telephone.len] = '\0';
+printf("\n                    ▷  고객번호     '%s'  \n", num.arr);
+printf("                    ▷  고객성명     '%s'  \n", name.arr);
+printf("                    ▷  고객생일     '%s'  \n", birthday.arr);
+printf("                    ▷  전화번호     '%s'  \n", telephone.arr);
+}
+printf("                    =======================================\n\n");
+
+  EXEC SQL CLOSE c_cursor;
+}
+
+/*--------------- 상품 목록 출력  ----------------------*/
+void Get_proinfo_P()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar num[10];
+   varchar name[20];
+   varchar brand[20];
+   varchar price[20];
+   varchar size[3];
+   varchar amount[3];
+   char proinfo[1000];
+EXEC SQL END DECLARE SECTION;
+
+   /* SQL 에러문 */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+   /* 실행시킬 SQL 문장*/
+   sprintf(proinfo, "SELECT *  FROM product");
+
+   EXEC SQL PREPARE S FROM :proinfo ;
+   //EXEC SQL DECLARE c_cursor CURSOR FOR S ; 
+   EXEC SQL OPEN c_cursor ; 
+printf("                   ┌──────────────────────────────────────┐\n");
+   printf("                   │           <   상품목록   >           │\n");
+printf("                   └──────────────────────────────────────┘\n");
+for(;;){
+EXEC SQL WHENEVER NOT FOUND DO break;
+EXEC SQL FETCH c_cursor INTO :num, :name, :brand, :price, :size, :amount;
+num.arr[num.len] = '\0';
+name.arr[name.len] = '\0';
+brand.arr[brand.len] = '\0';
+price.arr[price.len] = '\0';
+size.arr[size.len] = '\0';
+amount.arr[amount.len] = '\0';
+printf("\n                    ▷  상품번호     '%s'  \n", num.arr);
+printf("                    ▷  상품이름     '%s'  \n", name.arr);
+printf("                    ▷  브 랜 드      '%s'  \n", brand.arr);
+printf("                    ▷  가      격     '%s'  \n", price.arr);
+printf("                    ▷  사 이 즈      '%s'  \n", size.arr);
+printf("                    ▷  수      량     '%s'  \n", amount.arr);
+}
+printf("                    =======================================\n\n");
+  EXEC SQL CLOSE c_cursor;
+EXEC SQL COMMIT WORK ; 
+}
+void Get_tuple_NameC()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar csmno[100];
+   varchar csmname[100];
+   varchar birthday[100];
+   varchar telephone[100];
+
+   char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+   char no_temp[10];
+
+   /* Register sql_error() as the error handler. */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터가 올바르지 않습니다.\n");
+
+
+   /* 사용자 입력 */
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │        검색할 고객의 이름을 입력하시오        │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+   printf("                    ");
+    scanf("%s",no_temp);
+
+   
+   /* 실행시킬 SQL 문장*/
+   sprintf(dynstmt,"SELECT csmno, csmname, birthday, telephone FROM customer where csmname = '%s'", no_temp); 
+
+    EXEC SQL PREPARE S FROM :dynstmt ;
+    EXEC SQL DECLARE h_cursor CURSOR FOR S ; 
+
+    EXEC SQL OPEN h_cursor ; 
+
+  
+    EXEC SQL WHENEVER NOT FOUND do break;
+
+for(int i = 0; i<1; i++)
+    {
+        EXEC SQL WHENEVER NOT FOUND DO break;
+        EXEC SQL FETCH h_cursor INTO :csmno, :csmname, :birthday, :telephone;
+
+               csmno.arr[csmno.len] = '\0';
+   csmname.arr[csmname.len] = '\0';
+   birthday.arr[birthday.len] = '\0';
+   telephone.arr[telephone.len] = '\0';
+               printf("\n                    ▷  고객번호     '%s'  \n", csmno.arr);
+               printf("\n                    ▷  고객이름     '%s'  \n", csmname.arr);
+               printf("\n                    ▷  생    일     '%s'  \n", birthday.arr);
+               printf("\n                    ▷  전화번호     '%s'  \n", telephone.arr);
+    }
+    /* 전송된 투플의 수를 출력함. */
+    printf("\n                    검색 결과 : %d\n", sqlca.sqlerrd[2]);
+printf("\n                    =======================================\n\n");
+    EXEC SQL COMMIT WORK ; 
+}
+/*--------------- 직원 삭제  ----------------------*/
+void Delete_tuple_E()
+{
+   Get_proinfo_E();
+   
+   EXEC SQL BEGIN DECLARE SECTION;
+
+      char deleteemp[1000];
+
+   EXEC SQL END DECLARE SECTION;
+   char eno[100];
+   char flag;
+   
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │     삭제를 원하는 직원의 번호를 입력하시오    │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+      printf("                    ");
+scanf("%s",eno);
+   printf("                    Y/N\n");
+      printf("                    ");
+   flag = (char *)getch() ;
+   for(int i=0;i <1;i++){
+   EXEC SQL WHENEVER NOT FOUND DO break;
+   if(flag == 'y' || flag == 'Y'){
+      sprintf(deleteemp,"delete from employee where empno = '%s'",eno);
+      EXEC SQL EXECUTE IMMEDIATE :deleteemp ;
+      printf("삭제가 완료되었습니다.\n");
+      EXEC SQL COMMIT WORK ; 
+   }
+   else{
+      printf("취소되었습니다..\n");
+      
+   }}
+EXEC SQL COMMIT WORK ; 
+}
+/*--------------- 상품 삭제  ----------------------*/
+void Delete_tuple_P()
+{
+    Get_proinfo_P();
+   
+   EXEC SQL BEGIN DECLARE SECTION; 
+
+
+      char deletepdt[1000];
+
+   EXEC SQL END DECLARE SECTION;
+
+   char pno[100];
+   char flag;
+   
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+
+
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │     삭제를 원하는 상품의 번호를 입력하시오    │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+      printf("                    ");
+scanf("%s",pno);
+   printf("                    Y/N\n");
+      printf("                    ");
+	  flag = (char *)getch();
+   sprintf(deletepdt,"delete from product where pdtno = '%s'",pno);
+   for(int i=0;i <1;i++){
+   EXEC SQL WHENEVER NOT FOUND DO break;
+   if(flag == 'y' || flag == 'Y'){
+      EXEC SQL EXECUTE IMMEDIATE :deletepdt ;
+      printf("삭제가 완료되었습니다.\n");
+      EXEC SQL COMMIT WORK ;}
+   else{
+      printf("취소되었습니다.\n");}
+   }
+EXEC SQL COMMIT WORK ; 
+   }
+
+/*--------------- 직원 검색 출력  ----------------------*/
+void Get_tuple_NameE()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   varchar empno[100];
+   varchar empname[100];
+   varchar hiredate[100];
+   varchar sal[100];
+   varchar esult[100];
+
+   char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+   char no_temp[10];
+
+   /* Register sql_error() as the error handler. */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터가 올바르지 않습니다.\n");
+
+
+   /* 사용자 입력 */
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │        검색할 직원의 이름을 입력하시오        │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+   printf("                    ");
+   scanf("%s",no_temp);
+
+   
+   /* 실행시킬 SQL 문장*/
+   sprintf(dynstmt,"SELECT empno, empname, hiredate, sal, esult FROM employee where empname = '%s'", no_temp); 
+
+    EXEC SQL PREPARE S FROM :dynstmt ;
+    EXEC SQL DECLARE l_cursor CURSOR FOR S ; 
+    EXEC SQL OPEN l_cursor ; 
+
+  
+    EXEC SQL WHENEVER NOT FOUND do break;
+
+for(int i = 0; i<1; i++)
+    {
+        EXEC SQL WHENEVER NOT FOUND DO break;
+        EXEC SQL FETCH l_cursor INTO :empno, :empname, :hiredate, :sal, :esult;
+
+               empno.arr[empno.len] = '\0';
+   empname.arr[empname.len] = '\0';
+   hiredate.arr[hiredate.len] = '\0';
+   sal.arr[sal.len] = '\0';
+   esult.arr[esult.len] = '\0';
+
+               printf("\n                    ▷  직원번호     '%s'  \n", empno.arr);
+               printf("\n                    ▷  직원이름     '%s'  \n", empname.arr);
+               printf("\n                    ▷  입 사 일     '%s'  \n", hiredate.arr);
+               printf("\n                    ▷  월    급     '%s'  \n", sal.arr);
+               printf("\n                    ▷  판매수량     '%s'  \n", esult.arr);
+    }
+    /* 전송된 투플의 수를 출력함. */
+    printf("\n                    검색 결과 : %d\n", sqlca.sqlerrd[2]);
+printf("\n                    =======================================\n\n");
+    EXEC SQL COMMIT WORK ; 
+}
+/*--------------- 직원 목록 출력  ----------------------*/
+void Get_proinfo_E()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar num[10];
+   varchar name[20];
+   varchar hiredate[20];
+   varchar sal[10];
+   varchar esult[10];
+   char empinfo[1000];
+EXEC SQL END DECLARE SECTION;
+
+   /* Register sql_error() as the error handler. */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+   /* 실행시킬 SQL 문장*/
+   sprintf(empinfo, "SELECT *  FROM employee");
+
+   EXEC SQL PREPARE S FROM :empinfo ;
+
+   EXEC SQL DECLARE f_cursor CURSOR FOR S ; 
+   EXEC SQL OPEN f_cursor ; 
+printf("                   ┌──────────────────────────────────────┐\n");
+   printf("                   │           <   직원명단   >           │\n");
+printf("                   └──────────────────────────────────────┘\n");
+for(;;){
+EXEC SQL WHENEVER NOT FOUND DO break;
+EXEC SQL FETCH f_cursor INTO :num, :name, :hiredate, :sal, :esult;
+num.arr[num.len] = '\0';
+name.arr[name.len] = '\0';
+hiredate.arr[hiredate.len] = '\0';
+sal.arr[sal.len] = '\0';
+esult.arr[esult.len] = '\0';
+printf("\n                    ▷  직원번호     '%s'  \n", num.arr);
+printf("                    ▷  직원이름     '%s'  \n", name.arr);
+printf("                    ▷  입 사 일      '%s'  \n", hiredate.arr);
+printf("                    ▷  월      급     '%s'  \n", sal.arr);
+printf("                    ▷  판매실적      '%s'  \n", esult.arr);
+}
+printf("                    =======================================\n\n");
+  EXEC SQL CLOSE f_cursor;
+}
+void Insert_tuple_P()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   char  no[100];
+   char  brand[14];
+   char  name[13];
+   char  price[100];
+   char  size[14];
+   char  amoun[13];
+
+    char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+/* Register sql_error() as the error handler. */
+    EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터 값이 다릅니다.\n");
+
+   clrscr();
+
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │        추가할 상품의 정보를 입력하시오        │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+
+   printf("                    ▷  제품번호 : ");
+   scanf("%s",no);
+   if(no[0] == '\0' ) {
+       printf("%s\n", pdtno);
+       strcpy(no, pdtno);
+   }
+     
+   printf("                    ▷  브랜드 : ");
+   scanf("%s",brand);
+   if(brand[0] == '\0' ){
+       printf("%s\n", pdtbrand);
+       strcpy(brand, pdtbrand);
+   }
+
+   printf("                    ▷  제품명 : ");
+   scanf("%s",name);
+   if( name[0]== '\0' ){
+        printf("%s\n", pdtname);
+        strcpy(name, pdtname);
+   }
+
+   printf("                    ▷  가격 : ");
+   scanf("%s",price);
+   if(price[0] == '\0' ) {
+       printf("%s\n", pdtprice);
+       strcpy(price, pdtprice);
+   }
+     
+   printf("                    ▷  사이즈 : ");
+   scanf("%s",size);
+   if(size[0] == '\0' ){
+       printf("%s\n", pdtsize);
+       strcpy(size, pdtsize);
+   }
+
+   printf("                    ▷  수량 : ");
+   scanf("%s",amoun);
+   if( amoun[0]== '\0' ){
+        printf("%s\n", amount);
+        strcpy(amoun, amount);
+   }
+
+int i = 0;
+for(i = 0; i<1; i++){
+    sprintf(dynstmt,"insert into product values ( '%s', '%s', '%s', '%s', '%s', '%s')" ,no, brand, name, price, size, amoun);
+
+    EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+   printf("                   =====추가가 완료되었습니다=====\n");
+    EXEC SQL COMMIT WORK ;}
+}
+void Insert_tuple()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+    varchar csmno[10];
+    varchar csmname[10];
+    varchar birthday[11];
+    varchar telephone[20];
+
+    char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+/* Register sql_error() as the error handler. */
+    EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+   clrscr();
+
+   /* 데이터 입력 ->고쳐야함 우리 프로젝트에 맞게 */
+    gotoxy(40,5) ;
+
+    printf(" [ 추가할 고객 정보를 입력하세요 ]\n\n");   
+   
+    printf("                       고객번호 : \n");
+    printf("\n");
+    printf("                       고객이름 : \n");
+    printf("\n");
+    printf("                       고객생일 : \n");
+    printf("\n");
+    printf("                       전화번호 : \n");
+    printf("\n");
+
+
+   /* 고객번호 입력 */
+    gotoxy(34,7)  ; 
+    gets(csmno.arr);
+    csmno.len = strlen(csmno.arr);
+    
+   /* 고객이름 입력 */
+    gotoxy(34,9)  ;
+    gets(csmname.arr);
+    csmname.len = strlen(csmname.arr);
+
+   /* 고객생일 입력 */
+    gotoxy(34,11) ;
+    gets(birthday.arr);
+    birthday.len = strlen(birthday.arr);
+
+   /* 전화번호 입력 */
+    gotoxy(34,13) ;
+    gets(telephone.arr);
+    telephone.len = strlen(telephone.arr);
+int i = 0;
+   
+for(i = 0; i<1; i++){
+    //EXEC SQL WHENEVER NOT FOUND DO break;
+    sprintf(dynstmt,"insert into customer values ( '%s', '%s', '%s', '%s')" ,csmno.arr, csmname.arr, birthday.arr, telephone.arr);
+
+    EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+    printf("Insert Success\n");
+    EXEC SQL COMMIT WORK ;}
+}
+void Insert_tuple_E()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   char  no[10];
+   char  name[20];
+   char  hiredate[20];
+   char  sal[10];
+   char  esult[10];
+
+    char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+/* Register sql_error() as the error handler. */
+    EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+
+   clrscr();
+
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │        추가할 직원의 정보를 입력하시오        │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+
+   printf("                    ▷  직원번호 : ");
+   scanf("%s",no);
+   if(no[0] == '\0' ) {
+       printf("%s\n", empno);
+       strcpy(no, empno);
+   }
+     
+   printf("                    ▷  직원이름 : ");
+   scanf("%s",name);
+   if(name[0] == '\0' ){
+       printf("%s\n", empname);
+       strcpy(name, empname);
+   }
+
+   printf("                    ▷  입사일 : ");
+   scanf("%s",hiredate);
+   if(hiredate[0]== '\0' ){
+        printf("%s\n", hiredate);
+        strcpy(hiredate, hiredate);
+   }
+
+   printf("                    ▷  월급 : ");
+   scanf("%s",sal);
+   if(sal[0] == '\0' ) {
+       printf("%s\n", sal);
+       strcpy(sal, sal);
+   }
+
+   printf("                    ▷  판매실적 : ");
+   scanf("%s",esult);
+   if(esult[0] == '\0' ){
+       printf("%s\n", esult);
+       strcpy(esult, esult);
+   }
+
+
+int i = 0;
+for(i = 0; i<1; i++){
+    sprintf(dynstmt,"insert into employee values ( '%s', '%s', '%s', '%s', '%s')" ,no, name, hiredate, sal, esult);
+
+    EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+   printf("                   =====추가가 완료되었습니다=====\n");
+    EXEC SQL COMMIT WORK ;}
+}
+void Insert_tuple_C()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   char  no[10];
+   char  name[20];
+   char  birthday[20];
+   char  telephone[20];
+
+    char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+/* Register sql_error() as the error handler. */
+    EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다\n");
+
+   clrscr();
+
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │        추가할 고객의 정보를 입력하시오        │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+
+   printf("\n                    ▷  고객번호 : ");
+   scanf("%s",no);
+   if(no[0] == '\0' ) {
+       printf("%s\n", csmno);
+       strcpy(no, csmno);
+   }
+
+   printf("\n                    ▷  고객이름 : ");
+   scanf("%s",name);
+   if( name[0]== '\0' ){
+        printf("%s\n", csmname);
+        strcpy(name, csmname);
+   }
+
+   printf("\n                    ▷  생      일 : ");
+   scanf("%s",birthday);
+   if(birthday[0] == '\0' ) {
+       printf("%s\n", birthday);
+       strcpy(birthday, birthday);
+   }
+     
+   printf("\n                    ▷  전화번호 : ");
+   scanf("%s",telephone);
+   if(telephone[0] == '\0' ){
+       printf("%s\n", telephone);
+       strcpy(telephone, telephone);
+   }
+
+int i = 0;
+for(i = 0; i<1; i++){
+    sprintf(dynstmt,"insert into customer values ( '%s', '%s', '%s', '%s')" ,no, name, birthday, telephone);
+
+    EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+   printf("                   =====추가가 완료되었습니다=====\n");
+    EXEC SQL COMMIT WORK ;}
+}
+void Update_tuple_C()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   char dynstmt[1000];
+
+EXEC SQL END DECLARE SECTION;
+
+   char  no[10];
+   char  name[20];
+   char  birthday[20];
+   char  telephone[20];
+  
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │     수정을 원하는 고객의 번호를 입력하시오    │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+
+
+   printf("                    ▷  고객번호 : ");
+   scanf("%s",no);
+   if(no[0] == '\0' ) {
+       printf("%s\n", csmno);
+       strcpy(no, csmno);
+   }
+
+   printf("                    ▷  고객명 : ");
+   scanf("%s",name);
+   if( name[0]== '\0' ){
+        printf("%s\n", csmname);
+        strcpy(name, csmname);
+   }
+
+   printf("                    ▷  생일 : ");
+   scanf("%s",birthday);
+   if(birthday[0] == '\0' ) {
+       printf("%s\n", birthday);
+       strcpy(birthday, birthday);
+   }
+     
+   printf("                    ▷  전화번호 : ");
+   scanf("%s",telephone);
+   if(telephone[0] == '\0' ){
+       printf("%s\n", telephone);
+       strcpy(telephone, telephone);
+   }
+
+
+   sprintf(dynstmt,"update customer set csmno = '%s' ,  csmname = '%s' , birthday = '%s', telephone = '%s' where csmno = '%s'", no, name, birthday, telephone, no);
+   for(int i = 0; i<1; i++){
+   EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+   printf("                   =====수정이 완료되었습니다=====\n");
+   EXEC SQL COMMIT WORK ; }
+}
+
+void Update_tuple_P()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   char dynstmt[1000];
+
+EXEC SQL END DECLARE SECTION;
+
+   char  no[100];
+   char  brand[14];
+   char  name[13];
+   char  price[100];
+   char  size[14];
+   char  amoun[13];
+  
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │     수정을 원하는 제품의 번호를 입력하시오    │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+
+   printf("                    ▷  제품번호 : ");
+   scanf("%s",no);
+   if(no[0] == '\0' ) {
+       printf("%s\n", pdtno);
+       strcpy(no, pdtno);
+   }
+     
+   printf("                    ▷  브랜드 : ");
+   scanf("%s",brand);
+   if(brand[0] == '\0' ){
+       printf("%s\n", pdtbrand);
+       strcpy(brand, pdtbrand);
+   }
+
+   printf("                    ▷  제품명 : ");
+   scanf("%s",name);
+   if( name[0]== '\0' ){
+        printf("%s\n", pdtname);
+        strcpy(name, pdtname);
+   }
+
+   printf("                    ▷  가격 : ");
+   scanf("%s",price);
+   if(price[0] == '\0' ) {
+       printf("%s\n", pdtprice);
+       strcpy(price, pdtprice);
+   }
+     
+   printf("                    ▷  사이즈 : ");
+   scanf("%s",size);
+   if(size[0] == '\0' ){
+       printf("%s\n", pdtsize);
+       strcpy(size, pdtsize);
+   }
+
+   printf("                    ▷  수량 : ");
+   scanf("%s",amoun);
+   if( amoun[0]== '\0' ){
+        printf("%s\n", amount);
+        strcpy(amoun, amount);
+   }
+
+   sprintf(dynstmt,"update product set pdtno = '%s' ,  pdtbrand= '%s' , pdtname = '%s' , pdtprice = '%s' , pdtsize= '%s' , amount = '%s' where pdtno = '%s'", no, brand, name, price, size, amoun, no);
+   for(int i = 0; i<1; i++){
+   EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+   printf("                   =====수정이 완료되었습니다=====\n");
+   EXEC SQL COMMIT WORK ; }
+}
+
+void Update_tuple_E()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   char dynstmt[1000];
+
+EXEC SQL END DECLARE SECTION;
+
+   char  no[10];
+   char  name[20];
+   char  hiredate[20];
+   char  sal[10];
+   char  esult[10];
+  
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터값이 다릅니다.\n");
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │     수정을 원하는 직원의 번호를 입력하시오    │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+
+   printf("                    ▷  직원번호 : ");
+   scanf("%s",no);
+   if(no[0] == '\0' ) {
+       printf("%s\n", empno);
+       strcpy(no, empno);
+   }
+     
+   printf("                    ▷  직원이름 : ");
+   scanf("%s",name);
+   if(name[0] == '\0' ){
+       printf("%s\n", empname);
+       strcpy(name, empname);
+   }
+
+   printf("                    ▷  입사일 : ");
+   scanf("%s",hiredate);
+   if(hiredate[0]== '\0' ){
+        printf("%s\n", hiredate);
+        strcpy(hiredate, hiredate);
+   }
+
+   printf("                    ▷  월급 : ");
+   scanf("%s",sal);
+   if(sal[0] == '\0' ) {
+       printf("%s\n", sal);
+       strcpy(sal, sal);
+   }
+     
+   printf("                    ▷  판매실적 : ");
+   scanf("%s",esult);
+   if(esult[0] == '\0' ){
+       printf("%s\n", esult);
+       strcpy(esult, esult);
+   }
+
+   sprintf(dynstmt,"update employee set empno = '%s' , empname = '%s' , hiredate = '%s' , sal= '%s' , esult = '%s' where empno = '%s'", no, name, hiredate, sal, esult, no);
+   for(int i = 0; i<1; i++){
+   EXEC SQL EXECUTE IMMEDIATE :dynstmt ;
+
+   printf("                   =====수정이 완료되었습니다=====\n");
+   EXEC SQL COMMIT WORK ; }
+}
+
+
+void Count_sult(int *sult, char *empno)
+{
+   EXEC SQL BEGIN DECLARE SECTION;
+
+      char emp[1000];
+
+   EXEC SQL END DECLARE SECTION;
+
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+   sprintf(emp,"update employee set esult = esult +%d where empno = '%s'",sult,empno);
+
+   for(int i = 0; i<1; i++){
+   EXEC SQL EXECUTE IMMEDIATE :emp ;
+
+   printf("\n\n [ 감사합니다 ]");
+   EXEC SQL COMMIT WORK ;
+   }
+}
+
+
+void Show_employee()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar empno[10];
+   varchar empname[20];
+   char empinfo[1000];
+EXEC SQL END DECLARE SECTION;
+
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+   sprintf(empinfo, "SELECT empno, empname  FROM employee");
+
+   EXEC SQL PREPARE S FROM :empinfo ;
+   EXEC SQL DECLARE b_cursor CURSOR FOR S ; 
+   EXEC SQL OPEN b_cursor ; 
+printf("                   ┌──────────────────────────────────────┐\n");
+   printf("                   │           <   직원명단   >           │\n");
+printf("                   └──────────────────────────────────────┘\n");
+
+   for(;;){
+   EXEC SQL WHENEVER NOT FOUND DO break;
+   EXEC SQL FETCH b_cursor INTO :empno, :empname ;
+   empno.arr[empno.len] = '\0';
+   empname.arr[empname.len] = '\0';
+   printf("\n                    ▷  직원번호     '%s'  \n", empno.arr);
+   printf("                    ▷  직원이름     '%s'  \n", empname.arr);
+}
+printf("                    =======================================\n\n");
+  EXEC SQL CLOSE b_cursor;
+}
+void Get_tuple()
+{
+/* --------------------------------------------------------------------------
+   Retrieve the current maximum employee number
+-------------------------------------------------------------------------- */
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar pdtno[100];
+   varchar pdtbrand[100];
+   varchar pdtname[100];
+   varchar pdtprice[100];
+   varchar pdtsize[100];
+   varchar amount[100];
+
+   char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+   char no_temp[10];
+
+   /* Register sql_error() as the error handler. */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\7ORACLE ERROR:\n");
+
+
+   /* 사용자 입력 */
+   printf("찾을 사람의 부서번호를 입력하세요:");
+    fgets(no_temp, 10, stdin);
+    no_temp[strlen(no_temp)-1] = '\0' ;
+
+   
+   /* 실행시킬 SQL 문장*/
+   sprintf(dynstmt,"SELECT pdtno, pdtbrand, pdtname, pdtprice, pdtsize, amount FROM product where pdtno = '%s'", no_temp); 
+
+   /* select 문장이 제대로 구성되어 있는지 화면에 찍어봄 */
+   printf("SQL:%s\n", dynstmt);
+
+    EXEC SQL PREPARE S FROM :dynstmt ;
+
+    EXEC SQL OPEN c_cursor ; 
+
+  
+    EXEC SQL WHENEVER NOT FOUND do break;
+
+for(int i = 0; i<1; i++)
+    {
+        EXEC SQL WHENEVER NOT FOUND DO break;
+        EXEC SQL FETCH c_cursor INTO :pdtno, :pdtbrand, :pdtname, :pdtprice, :pdtsize, :amount;
+
+             pdtno.arr[pdtno.len] = '\0';
+	pdtbrand.arr[pdtbrand.len] = '\0';
+	pdtname.arr[pdtname.len] = '\0';
+	pdtprice.arr[pdtprice.len] = '\0';
+	pdtsize.arr[pdtsize.len] = '\0';
+	amount.arr[amount.len] = '\0';
+
+	printf("PDTNUMBER:%s PDTBRAND:%s PDTNAME:%s PDTPRICE:%s PDTSIZE:%s AMOUNT:%s \n", pdtno.arr, pdtbrand.arr, pdtname.arr, pdtprice.arr, pdtsize.arr, amount.arr);
+    }
+    /* 전송된 투플의 수를 출력함. */
+    printf("match tuple no : %d\n", sqlca.sqlerrd[2]);
+
+    EXEC SQL COMMIT WORK ; 
+
+}
+void Get_tuple_NoP()
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+   varchar pdtno[100];
+   varchar pdtbrand[100];
+   varchar pdtname[100];
+   varchar pdtprice[100];
+   varchar pdtsize[100];
+   varchar amount[100];
+
+   char dynstmt[1000];
+EXEC SQL END DECLARE SECTION;
+
+   char no_temp[10];
+
+   /* Register sql_error() as the error handler. */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터가 올바르지 않습니다.\n");
+
+
+   /* 사용자 입력 */
+printf("                   ┌───────────────────────────────────────────────┐\n");
+   printf("                   │        검색할 상품의 번호을 입력하시오        │\n");
+printf("                   └───────────────────────────────────────────────┘\n");
+   printf("                    ");
+    scanf("%s",no_temp);
+
+   /* 실행시킬 SQL 문장*/
+   sprintf(dynstmt,"SELECT pdtno, pdtbrand, pdtname, pdtprice, pdtsize, amount FROM product where pdtno = '%s'", no_temp); 
+
+    EXEC SQL PREPARE S FROM :dynstmt ;
+    EXEC SQL DECLARE i_cursor CURSOR FOR S ; 
+
+    EXEC SQL OPEN i_cursor ; 
+
+  
+    EXEC SQL WHENEVER NOT FOUND do break;
+
+for(int i = 0; i<1; i++)
+    {
+        EXEC SQL WHENEVER NOT FOUND DO break;
+        EXEC SQL FETCH i_cursor INTO :pdtno, :pdtbrand, :pdtname, :pdtprice, :pdtsize, :amount;
+
+              pdtno.arr[pdtno.len] = '\0';
+   pdtbrand.arr[pdtbrand.len] = '\0';
+   pdtname.arr[pdtname.len] = '\0';
+   pdtprice.arr[pdtprice.len] = '\0';
+   pdtsize.arr[pdtsize.len] = '\0';
+   amount.arr[amount.len] = '\0';
+
+               printf("\n                    ▷  상품번호     '%s'  \n", pdtno.arr);
+               printf("\n                    ▷  브 랜 드     '%s'  \n", pdtbrand.arr);
+               printf("\n                    ▷  상품이름     '%s'  \n", pdtname.arr);
+               printf("\n                    ▷  가    격     '%s'  \n", pdtprice.arr);
+               printf("\n                    ▷  사 이 즈     '%s'  \n", pdtsize.arr);
+               printf("\n                    ▷  수    량     '%s'  \n", amount.arr);
+    }
+    /* 전송된 투플의 수를 출력함. */
+    printf("\n                    검색 결과 : %d\n", sqlca.sqlerrd[2]);
+printf("\n                    =======================================\n\n");
+    EXEC SQL COMMIT WORK ; 
+}
+void Out_Of_Stock()
+{
+
+EXEC SQL BEGIN DECLARE SECTION;
+   varchar num[10];
+   varchar name[20];
+   varchar brand[20];
+   varchar price[20];
+   varchar size[3];
+   varchar amount[3];
+   char stock[1000];
+EXEC SQL END DECLARE SECTION;
+
+   /* Register sql_error() as the error handler. */
+   EXEC SQL WHENEVER SQLERROR DO sql_error("\n입력한 데이터가 올바르지 않습니다.\n");
+
+   /* 실행시킬 SQL 문장*/
+   sprintf(stock, "SELECT *  FROM product WHERE amount < 5");
+
+   EXEC SQL PREPARE S FROM :stock ;
+   EXEC SQL DECLARE a_cursor CURSOR FOR S ; 
+   EXEC SQL OPEN a_cursor ; 
+printf("                   ┌──────────────────────────────────────┐\n");
+   printf("                   │           <   부족재고   >           │\n");
+printf("                   └──────────────────────────────────────┘\n");
+   printf("                       ※남은 재고가 5미만인 제품 목록※\n");
+for(;;){
+EXEC SQL WHENEVER NOT FOUND DO break;
+EXEC SQL FETCH a_cursor INTO :num, :brand, :name, :price, :size, :amount;
+num.arr[num.len] = '\0';
+brand.arr[name.len] = '\0';
+name.arr[brand.len] = '\0';
+price.arr[price.len] = '\0';
+size.arr[size.len] = '\0';
+amount.arr[amount.len] = '\0';
+printf("\n                    ▷  상품번호     '%s'  \n", num.arr);
+printf("                    ▷  상품이름     '%s'  \n", name.arr);
+printf("                    ▷  브 랜 드     '%s'  \n", brand.arr);
+printf("                    ▷  가    격     '%s'  \n", price.arr);
+printf("                    ▷  사 이 즈     '%s'  \n", size.arr);
+printf("                    ▷  수    량     '%s'  \n", amount.arr);
+}
+printf("\n                    =======================================\n\n");
+  EXEC SQL COMMIT WORK ; 
+  EXEC SQL CLOSE a_cursor;
+}
+void rtrim(char temp[])
+{
+	int i;
+
+	i = strlen(temp)-1;
+	
+	while (temp[i] == ' ' && i > 0 ){
+		i--;
+        }
+	temp[i+1]='\0';
+}
+
+void gotoxy(int x, int y)
+{
+    COORD Cur= {(SHORT)x, (SHORT) y};
+
+    SetConsoleCursorPosition(STD_HANDLE, Cur);
+}
+
+void getxy(int *x, int *y)
+{
+    CONSOLE_SCREEN_BUFFER_INFO Buf ;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &Buf);
+    *x = (int)Buf.dwCursorPosition.X ;
+    *y = (int)Buf.dwCursorPosition.Y ;
+ 
+}
+
+void clrscr(void)
+{
+    COORD Cur= {0, 0};
+    unsigned long dwLen;
+
+    FillConsoleOutputCharacter(STD_HANDLE, ' ', 80*25, Cur, &dwLen);
+}
+
+void sql_error(char *msg)
+{
+    char err_msg[128];
+    size_t buf_len, msg_len;
+
+    EXEC SQL WHENEVER SQLERROR CONTINUE;
+
+    printf("\n%s\n", msg);
+    buf_len = sizeof (err_msg);
+    sqlglm(err_msg, &buf_len, &msg_len);
+    printf("%.*s\n", msg_len, err_msg);
+
+    getch();
+    EXEC SQL ROLLBACK WORK ;
+
+}
