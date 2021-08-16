@@ -1,5 +1,5 @@
 # C-ShoeFilx
-##신발 판매 직원
+## 신발 판매 직원
 
 #### 직원 - 회원가입 및 로그인
 https://user-images.githubusercontent.com/71927210/129434595-bf91ede0-e455-4f62-8dc4-4b44c4cb1fc9.mp4
@@ -38,7 +38,7 @@ https://user-images.githubusercontent.com/71927210/129586761-8efbe244-4385-47c7-
 https://user-images.githubusercontent.com/71927210/129586880-9fdce5c1-69f4-41fe-b357-61c36a2f2db4.mp4
 
 
-##신발 구매 고객
+## 신발 구매 고객
 #### 고객 - 회원가입 및 로그인
 https://user-images.githubusercontent.com/71927210/129434597-8eeea6b6-349d-4ad6-a1b7-48b3833f5b7b.mp4
 
