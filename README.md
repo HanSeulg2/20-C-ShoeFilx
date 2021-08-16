@@ -13,6 +13,30 @@ https://user-images.githubusercontent.com/71927210/129582834-290d7875-b633-4bc8-
 #### 직원 - 재고 삭제
 https://user-images.githubusercontent.com/71927210/129582822-e004ec1f-7a5f-41f6-b61b-104e0cfb6853.mp4
 
+#### 직원 - 상품 추가
+https://user-images.githubusercontent.com/71927210/129585265-363bb618-6794-446f-bb93-e2149f234fd8.mp4
+
+#### 직원 - 상품 수정
+https://user-images.githubusercontent.com/71927210/129585166-a983ebab-1db0-4e7c-975a-e095f8f68481.mp4
+
+#### 직원 - 고객 정보 확인
+https://user-images.githubusercontent.com/71927210/129585192-5f4b80be-0784-4d50-9889-8fe206b17a6d.mp4
+
+#### 직원 - 고객 추가
+https://user-images.githubusercontent.com/71927210/129585226-451b5cc5-ad61-4e09-9cdc-77ab59461c9e.mp4
+
+#### 직원 - 고객 (이름) 검색
+https://user-images.githubusercontent.com/71927210/129585253-50470268-7472-450b-b11b-a08d5fa52cc8.mp4
+
+#### 직원 - 고객 삭제 및 수정
+https://user-images.githubusercontent.com/71927210/129585256-c8eb9a45-6c7c-4dc4-abc5-b80b3934bf17.mp4
+
+
+
+
+---------
+
+
 #### 고객 - 회원가입 및 로그인
 https://user-images.githubusercontent.com/71927210/129434597-8eeea6b6-349d-4ad6-a1b7-48b3833f5b7b.mp4
 
