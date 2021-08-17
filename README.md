@@ -5,6 +5,12 @@
 
 ## E-R 다이어그램
 ![ER](https://user-images.githubusercontent.com/71927210/129653519-002cdf1b-6011-4904-9fba-0b07524e1dae.png)
+## 테이블 기술서
+![USERS](https://user-images.githubusercontent.com/71927210/129653837-4cbb3750-c35f-4ff3-9935-631e83b783b4.png)
+![CUSTOMER](https://user-images.githubusercontent.com/71927210/129653876-b08849cb-3e67-40fa-825d-daa7e924344f.png)
+![PRODUCT](https://user-images.githubusercontent.com/71927210/129653918-16bd96af-d3f7-42fc-95ed-c3fc129f86a1.png)
+![EMPLOYEE](https://user-images.githubusercontent.com/71927210/129653972-812430ef-8e02-4236-9e84-abef56534c3c.png)
+
 ## 1.신발 판매 직원 기능
 
 #### 직원 - 1.회원가입 및 로그인
